@@ -1,1 +1,0 @@
-export {default as Reyes} from './Hello.vue'

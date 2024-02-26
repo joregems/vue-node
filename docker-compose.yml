@@ -1,18 +1,5 @@
 version: '3'
 services:
-  front:    
-    build: ./front
-    ports:
-      - "5173:5173"
-    image: "front-vue:v0.1"
-    tty: true
-    restart: always
-    volumes:
-      - ./front:/app
-    command: sh entrypoint.sh
-    networks:
-      - red2
-
   db:
     image: postgres:16-alpine
     env_file:
@@ -28,7 +15,7 @@ services:
   server:    
     build: ./server
     env_file:
-      - ../config/config.env
+      - ./config.env
     ports:
       - "8080:8080"
     image: "server:v0.1"
