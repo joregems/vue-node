@@ -185,7 +185,7 @@ app.get('/users', isAuth, async (req, res) => {
 
 
 //update user
-app.put('/users/:uuid', async (req, res) => {
+app.put('/users/:uuid', isAuth, async (req, res) => {
   const uuid = req.params.uuid;
   const user_to_replace = req.body;
   try {
@@ -205,7 +205,7 @@ app.put('/users/:uuid', async (req, res) => {
 
 
 //delete user
-app.delete('/users/:uuid', async (req, res) => {
+app.delete('/users/:uuid', isAuth, async (req, res) => {
   const uuid = req.params.uuid;
   try {
     const user = await User.findOne({
@@ -225,7 +225,7 @@ app.delete('/users/:uuid', async (req, res) => {
 
 
 //find user
-app.get('/users/:uuid', async (req, res) => {
+app.get('/users/:uuid', isAuth, async (req, res) => {
   const uuid = req.params.uuid
   try {
     const user = await User.findOne({
@@ -241,78 +241,6 @@ app.get('/users/:uuid', async (req, res) => {
   }
   return res
 });
-
-
-app.post('/posts', async (req, res) => {
-  const { body, userUuid } = req.body;
-  try {
-    const user = await User.findOne({ where: { uuid: userUuid } });
-    const post = await Post.create({ body, userId: user.id });
-    res.json(post);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json(err.errors);
-  }
-  return res;
-});
-
-
-app.get('/posts', async (req, res) => {
-  try {
-    // const posts = await Post.findAll({include: [User]});
-    const posts = await Post.findAll({
-      // include: ['user']
-      raw : true // <--- HERE
-
-      });
-    res.json(posts)
-  } catch (err) {
-    console.log(err)
-    res.status(500).json(err.errors)
-  }
-  return res
-});
-
-
-
-//create product
-app.post('/products', isAuth, async (req, res) => {
-  const { name, description, price } = req.body;
-  try {
-    const product = await Product.create({ name, description, price }) 
-    res.json(product);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json(err.errors);
-  }
-  return res;
-});
-
-
-
-app.get('/products', isAuth, async (req, res) => {
-  try {
-    const products = await Product.findAll()
-    res.json(products)
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ error: 'Something whent wrong' })
-  }
-  return res
-})
-
-
-// Valid
-
-function sum(a, b) {
-  return a + b;
-}
-module.exports.sum = sum;
-
-// if (require.main === module) {
-//   main();
-// }
-
 
 //deploying server
 app.listen(PORT, HOST, async () => {
