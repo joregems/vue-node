@@ -1,0 +1,52 @@
+version: '3'
+services:
+  front:    
+    build: ./front
+    ports:
+      - "5173:5173"
+    image: "front-vue:v0.1"
+    tty: true
+    restart: always
+    volumes:
+      - ./front:/app
+    command: npm run dev -- --host
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ../config/config.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  db_mongo:
+    image: mongo:7
+    env_file:
+      - ../config/mongo.env
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    ports:
+      - '27017:27017'
+    restart: always
+
+  server:    
+    build: ./server
+    env_file:
+      - ../config/config.env
+    ports:
+      - "8080:8080"
+    image: "server:v0.1"
+    tty: true
+    volumes:
+      - ./server:/usr/src/app
+    restart: always
+    command: sh entrypoint.sh
+    depends_on:
+      - db
+volumes:
+  postgres_data:
+  mongo_data:
+
