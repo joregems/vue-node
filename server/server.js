@@ -16,9 +16,10 @@ const app = express();
 
 
 // Add headers before the routes are defined
+
 app.use(cors({
   credentials: true,
-  origin: env.FRONT_HOST
+  origin: [env.FRONT_HOST]
 }));
 
 app.use(express.json());
@@ -27,7 +28,7 @@ app.use(cookieParser());
 const cookies_opt = {
   secure: process.env.NODE_ENV !== "development",
   httpOnly: true,
-  sameSite: process.env.NODE_ENV !== "development" ? 'none':'strict'
+  sameSite: process.env.NODE_ENV !== "development" ? 'none':'lax'
 }
 
 ///create token
@@ -185,7 +186,7 @@ app.get('/users', isAuth, async (req, res) => {
 
 
 //update user
-app.put('/users/:uuid', isAuth, async (req, res) => {
+app.put('/users/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
   const user_to_replace = req.body;
   try {
@@ -205,7 +206,7 @@ app.put('/users/:uuid', isAuth, async (req, res) => {
 
 
 //delete user
-app.delete('/users/:uuid', isAuth, async (req, res) => {
+app.delete('/users/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
   try {
     const user = await User.findOne({
@@ -225,7 +226,7 @@ app.delete('/users/:uuid', isAuth, async (req, res) => {
 
 
 //find user
-app.get('/users/:uuid', isAuth, async (req, res) => {
+app.get('/users/:uuid', async (req, res) => {
   const uuid = req.params.uuid
   try {
     const user = await User.findOne({
@@ -241,6 +242,7 @@ app.get('/users/:uuid', isAuth, async (req, res) => {
   }
   return res
 });
+
 
 //deploying server
 app.listen(PORT, HOST, async () => {
